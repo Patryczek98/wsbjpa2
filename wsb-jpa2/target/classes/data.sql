@@ -19,6 +19,7 @@ CREATE TABLE IF NOT EXISTS patient (
                                        first_name VARCHAR(255) NOT NULL,
                                        last_name VARCHAR(255) NOT NULL,
                                        date_of_birth DATE NOT NULL,
+                                       version BIGINT NOT NULL,
                                        CONSTRAINT pk_patient PRIMARY KEY (id)
 );
 
@@ -54,30 +55,43 @@ CREATE TABLE IF NOT EXISTS medical_treatment (
 INSERT INTO doctor (first_name, last_name, specialization) VALUES
                                                                ('Alice', 'Brown', 'Kardiolog'),
                                                                ('David', 'Clark', 'Neurolog'),
-                                                               ('Sophia', 'Lopez', 'Pediatra');
+                                                               ('Sophia', 'Lopez', 'Pediatra'),
+                                                               ('Michael', 'Smith', 'Ortopeda');
 
--- Insert dla PatientEntity
-INSERT INTO patient (first_name, last_name, date_of_birth) VALUES
-                                                               ('Liam', 'Davis', '1995-06-15'),
-                                                               ('Emma', 'Harris', '1992-12-25'),
-                                                               ('Noah', 'Martinez', '1980-02-10');
+-- Insert dla PatientEntity (różne nazwiska, daty urodzenia, wersja)
+INSERT INTO patient (first_name, last_name, date_of_birth, version) VALUES
+                                                                        ('Liam', 'Kowalski', '1995-06-15', 0),
+                                                                        ('Emma', 'Kowalski', '1992-12-25', 0),
+                                                                        ('Noah', 'Nowak', '1980-02-10', 0),
+                                                                        ('Olivia', 'Wiśniewska', '2000-08-20', 0),
+                                                                        ('Ava', 'Zielińska', '1975-03-05', 0);
 
 -- Insert dla AddressEntity
 INSERT INTO address (address_line1, address_line2, city, postal_code) VALUES
                                                                           ('Main Street', 'Apt 1', 'Warsaw', '00-001'),
                                                                           ('Park Avenue', 'Suite 2', 'Krakow', '30-002'),
-                                                                          ('Sunny Road', NULL, 'Gdansk', '80-003');
+                                                                          ('Sunny Road', NULL, 'Gdansk', '80-003'),
+                                                                          ('Oak Lane', 'Flat 5', 'Wroclaw', '50-004'),
+                                                                          ('River Road', NULL, 'Poznan', '60-005');
 
--- Insert dla VisitEntity
+-- Insert dla VisitEntity (różna liczba wizyt dla pacjentów)
 INSERT INTO visit (description, visit_date_time, doctor_id, patient_id) VALUES
-                                                                            ('Routine Check', '2024-05-01 11:00:00', 1, 1),
-                                                                            ('Annual Exam', '2024-04-10 10:30:00', 2, 2),
-                                                                            ('Specialist Consult', '2024-04-15 13:00:00', 3, 3),
-                                                                            ('Therapy Session', '2024-04-05 14:45:00', 1, 2);
+                                                                            ('Routine Check', '2024-05-01 11:00:00', 1, 1), -- Liam Kowalski
+                                                                            ('Follow-up', '2024-06-01 12:00:00', 2, 1),      -- Liam Kowalski
+                                                                            ('Annual Exam', '2024-04-10 10:30:00', 2, 2),    -- Emma Kowalski
+                                                                            ('Specialist Consult', '2024-04-15 13:00:00', 3, 3), -- Noah Nowak
+                                                                            ('Therapy Session', '2024-04-05 14:45:00', 1, 3),    -- Noah Nowak
+                                                                            ('Check-up', '2024-07-01 09:00:00', 4, 3),          -- Noah Nowak
+                                                                            ('Consultation', '2024-03-20 15:00:00', 3, 4),      -- Olivia Wiśniewska
+                                                                            ('Emergency Visit', '2024-08-10 16:00:00', 2, 5);   -- Ava Zielińska
 
 -- Insert dla MedicalTreatmentEntity
 INSERT INTO medical_treatment (type, visit_id) VALUES
                                                    ('DIAGNOSIS', 1),
                                                    ('MEDICATION', 2),
                                                    ('THERAPY', 3),
-                                                   ('SURGERY', 4);
+                                                   ('SURGERY', 4),
+                                                   ('DIAGNOSIS', 5),
+                                                   ('MEDICATION', 6),
+                                                   ('THERAPY', 7),
+                                                   ('SURGERY', 8);

@@ -1,6 +1,9 @@
 package com.jpacourse.persistance.entity;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +25,11 @@ public class PatientEntity {
 	@Column(name = "date_of_birth")
 	private LocalDate dateOfBirth;
 
+	@Version
+	private Long version;
+
 	@OneToMany(mappedBy = "patient", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+	@Fetch(FetchMode.JOIN)
 	private List<VisitEntity> visits = new ArrayList<>();
 
 	// Getters and setters
@@ -34,6 +41,8 @@ public class PatientEntity {
 	public void setLastName(String lastName) { this.lastName = lastName; }
 	public LocalDate getDateOfBirth() { return dateOfBirth; }
 	public void setDateOfBirth(LocalDate dateOfBirth) { this.dateOfBirth = dateOfBirth; }
+	public Long getVersion() { return version; }
+	public void setVersion(Long version) { this.version = version; }
 	public List<VisitEntity> getVisits() { return visits; }
 	public void setVisits(List<VisitEntity> visits) { this.visits = visits; }
 }

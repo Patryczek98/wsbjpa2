@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -57,7 +58,7 @@ class PatientServiceTest {
         VisitEntity visit = new VisitEntity();
         visit.setPatient(savedPatient);
         visit.setDoctor(savedDoctor);
-        visit.setVisitDateTime(LocalDateTime.now().minusDays(1)); // Wizyta w przeszłości
+        visit.setVisitDateTime(LocalDateTime.now().minusDays(1));
         visit.setDescription("Konsultacja kardiologiczna");
         VisitEntity savedVisit = visitService.saveVisit(visit);
 
@@ -104,7 +105,7 @@ class PatientServiceTest {
         VisitEntity visit = new VisitEntity();
         visit.setPatient(savedPatient);
         visit.setDoctor(savedDoctor);
-        visit.setVisitDateTime(LocalDateTime.now().minusDays(1)); // Wizyta w przeszłości
+        visit.setVisitDateTime(LocalDateTime.now().minusDays(1));
         visit.setDescription("Konsultacja kardiologiczna");
         VisitEntity savedVisit = visitService.saveVisit(visit);
 
@@ -149,5 +150,43 @@ class PatientServiceTest {
         assertEquals("Lekarz", patientTO.getVisits().get(0).getDoctorLastName(), "Doctor last name should match");
         assertEquals(1, patientTO.getVisits().get(0).getTreatmentTypes().size(), "Should have one treatment");
         assertEquals(TreatmentType.MEDICATION, patientTO.getVisits().get(0).getTreatmentTypes().get(0), "Treatment type should match");
+    }
+
+    @Test
+    void testShouldFindVisitsByPatientId() {
+        // Given
+        DoctorEntity doctor = new DoctorEntity();
+        doctor.setFirstName("Jan");
+        doctor.setLastName("Lekarz");
+        doctor.setSpecialization("Kardiolog");
+        DoctorEntity savedDoctor = doctorService.saveDoctor(doctor);
+
+        PatientEntity patient = new PatientEntity();
+        patient.setFirstName("Anna");
+        patient.setLastName("Kowalska");
+        patient.setDateOfBirth(LocalDate.of(1990, 5, 15));
+        PatientEntity savedPatient = patientService.savePatient(patient);
+
+        VisitEntity visit1 = new VisitEntity();
+        visit1.setPatient(savedPatient);
+        visit1.setDoctor(savedDoctor);
+        visit1.setVisitDateTime(LocalDateTime.now().minusDays(2));
+        visit1.setDescription("Konsultacja kardiologiczna");
+        visitService.saveVisit(visit1);
+
+        VisitEntity visit2 = new VisitEntity();
+        visit2.setPatient(savedPatient);
+        visit2.setDoctor(savedDoctor);
+        visit2.setVisitDateTime(LocalDateTime.now().minusDays(1));
+        visit2.setDescription("Follow-up");
+        visitService.saveVisit(visit2);
+
+        // When
+        List<VisitEntity> visits = patientService.findVisitsByPatientId(savedPatient.getId());
+
+        // Then
+        assertEquals(2, visits.size(), "Should find two visits for the patient");
+        assertTrue(visits.stream().anyMatch(v -> v.getDescription().equals("Konsultacja kardiologiczna")));
+        assertTrue(visits.stream().anyMatch(v -> v.getDescription().equals("Follow-up")));
     }
 }
